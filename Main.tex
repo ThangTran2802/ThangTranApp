@@ -1,0 +1,681 @@
+% ThangTranApp - OOP Java Final Report
+
+\documentclass[fonts]{icst}
+
+\usepackage{moreverb}
+\usepackage[breaklinks,colorlinks,bookmarksopen,bookmarksnumbered,linkcolor=ICSTblue,citecolor=blue,urlcolor=ICSTblue]{hyperref}
+\usepackage{breakurl}
+\usepackage{doi}
+\usepackage{cancel}
+\usepackage{ulem}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage[noend]{algpseudocode}
+\usepackage{multirow}
+\usepackage[ruled,linesnumbered]{algorithm2e}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage[normalem]{ulem}
+\usepackage{subfig}
+\usepackage{listings}
+\usepackage{tabularx}
+
+% Code listing style
+\lstdefinestyle{javastyle}{
+    language=Java,
+    basicstyle=\ttfamily\scriptsize,
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{red},
+    commentstyle=\color{green!50!black}\itshape,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=5pt,
+    backgroundcolor=\color{gray!5},
+    frame=single,
+    rulecolor=\color{gray!30},
+    breaklines=true,
+    captionpos=b,
+    tabsize=4,
+    showstringspaces=false
+}
+\lstset{style=javastyle}
+
+\newcommand\BibTeX{{\rmfamily B\kern-.05em \textsc{i\kern-.025em b}\kern-.08em
+T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\def\volumeyear{2026}
+
+\begin{titlepage}
+\begin{center}
+    \textbf{\Large EAST ASIA UNIVERSITY OF TECHNOLOGY}\\[0.2cm]
+    \textbf{\Large \bfseries INTERNATIONAL TRAINING AND COOPERATION INSTITUTE}\\[0.2cm]
+    \textbf{---o0o--- }\\[1cm]
+    \includegraphics[width=0.3\textwidth]{Images/logo.jpg}\\[2cm]
+    \textbf{\LARGE \textcolor{red}{COURSEWORK}}\\[1cm]
+    \textbf{\LARGE COURSE: OBJECT ORIENTED PROGRAMMING (JAVA)}\\[1cm]
+    \textbf{\LARGE TOPIC 14 - Develop an application for managing ride booking and trip records}\\[1cm]
+    \textbf{\LARGE CREDIT CLASS: LTHDT.15.K15.01.LT.C17.1\_LT }\\[3cm]
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|p{5cm}|c|c|}
+\hline
+\multicolumn{4}{|l|}{\textbf{Supervisor:} Nguyen Cong Binh} \\ \hline
+\multicolumn{4}{|l|}{\textbf{Group Number:} GROUP-NUMBER} \\ \hline
+\textbf{No.} & \textbf{Full Name} & \textbf{Student ID} & \textbf{Class} \\ \hline
+1 & Tran Quyet Thang & STUDENT-ID & DCIT.15 \\ \hline
+\end{tabular}
+\end{table}
+
+    \vfill
+    \textbf{Bac Ninh - 2026}
+\end{center}
+\end{titlepage}
+
+\articletype{OOP Java}
+\setcounter{page}{1}
+
+\begin{document}
+\raggedright
+
+\title{Develop an Application for Managing Ride Booking and Trip Records}
+
+\author{Tran Quyet Thang\affil{1}}
+
+\address{\affilnum{1}International Training and Cooperation Institute, East Asia University of Technology, Vietnam.}
+
+\abstract{This report presents the design and implementation of \textbf{ThangTranApp}, a Smart Ride Booking System developed using Java and Object-Oriented Programming (OOP) principles. The application simulates a ride-hailing platform similar to Grab or Uber, allowing customers to request rides and drivers to manage their trips. The system features a graphical user interface (GUI) built with Java Swing, a MySQL database for persistent data storage, and a modular architecture organized around core OOP concepts including Inheritance, Encapsulation, and Polymorphism. Key functionalities include ride booking with automatic fare calculation, ride history tracking by phone number, driver authentication, a real-time driver dashboard with trip statistics, and driver registration. The application was tested with an automated test suite consisting of six test cases covering all major workflows. This report documents the system design, class hierarchy, database schema, implementation details with code explanations, and testing results.}
+
+\keywords{Object-Oriented Programming, Java, Swing, MySQL, JDBC, Ride Booking, Inheritance, Polymorphism, Encapsulation}
+
+\fnotetext[1]{Corresponding author: Tran Quyet Thang. Email: 24002408@eaut.edu.vn}
+
+\maketitle
+
+%=============================================
+\section{Introduction}
+%=============================================
+
+\subsection{Background and Motivation}
+
+In recent years, ride-hailing applications such as Grab, Uber, and Be have revolutionized urban transportation worldwide. These platforms connect passengers with drivers through a digital interface, enabling convenient, on-demand transportation services. Inspired by this model, this project aims to develop a simplified ride booking system that demonstrates the practical application of Object-Oriented Programming (OOP) principles learned throughout the course.
+
+\subsection{Project Objectives}
+
+The main objectives of this project are:
+
+\begin{itemize}
+    \item Develop a ride booking application where users can request rides and view ride history through a graphical user interface.
+    \item Implement automatic fare calculation based on distance traveled.
+    \item Manage ride status throughout the booking lifecycle (In Progress $\rightarrow$ Completed).
+    \item Store all data persistently in a MySQL database.
+    \item Apply OOP principles: \textbf{Inheritance}, \textbf{Encapsulation}, and \textbf{Polymorphism}.
+    \item Provide separate interfaces for two user roles: Customer and Driver.
+\end{itemize}
+
+\subsection{Technology Stack}
+
+\begin{table}[h!]
+\centering
+\caption{Technology stack used in the project}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Component} & \textbf{Technology} \\ \hline
+Programming Language & Java (JDK 17+) \\ \hline
+GUI Framework & Java Swing \\ \hline
+Database & MySQL 8.0 \\ \hline
+Database Connector & mysql-connector-j-8.3.0.jar (JDBC) \\ \hline
+IDE & Visual Studio Code \\ \hline
+Build Script & Windows Batch (.bat) \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Report Structure}
+
+This report is organized as follows: Section 2 covers the system design and development, including functional requirements, system architecture, OOP design with class hierarchy, database schema, and key implementation details with code explanations. Section 3 presents the testing methodology and evaluation results. Section 4 provides the conclusion and future work. The source code is available on GitHub and a demo video is available on YouTube (links provided in Appendix).
+
+
+%=============================================
+\section{System Design and Development}\label{sec:design}
+%=============================================
+
+\subsection{Functional Description}
+
+The application supports two distinct user roles, each with specific functionality:
+
+\subsubsection{Customer Functions}
+\begin{enumerate}
+    \item \textbf{Login with Phone Number:} Customers enter their phone number to access the booking interface. No account registration is required for simplicity.
+    \item \textbf{Book a Ride:} Customers enter pickup location, dropoff location, and distance in kilometers. The system automatically calculates the fare and assigns an available driver.
+    \item \textbf{View Ride History:} Customers can view their past rides filtered by phone number, displayed in a table with driver name, license plate, route, fare, and status.
+\end{enumerate}
+
+\subsubsection{Driver Functions}
+\begin{enumerate}
+    \item \textbf{Secure Login:} Drivers authenticate with username and password. The password input is masked for security.
+    \item \textbf{View Dashboard:} After login, drivers see a comprehensive dashboard with statistics including completed trips count, total earnings, and vehicle information.
+    \item \textbf{View Active Ride:} If the driver has an active ride, the dashboard displays customer details, route, distance, and fare in real-time.
+    \item \textbf{Complete Ride:} Drivers can mark the current ride as completed, which updates the database and makes them available for new bookings.
+    \item \textbf{Register New Driver:} New driver accounts can be created through a registration form.
+\end{enumerate}
+
+\subsubsection{Fare Calculation Formula}
+
+The fare is calculated using a simple formula:
+
+\begin{equation}
+    \text{Fare} = 10{,}000 + (8{,}000 \times \text{distance in km}) \quad \text{(VND)}
+\end{equation}
+
+Where 10,000 VND is the base fee and 8,000 VND is the per-kilometer rate.
+
+\subsection{System Architecture}
+
+The application follows a layered architecture pattern with three main layers:
+
+\begin{enumerate}
+    \item \textbf{Presentation Layer (GUI):} \texttt{BookingAppGUI.java} -- handles all user interface rendering and event handling using Java Swing. Uses \texttt{CardLayout} to switch between Login, Customer Dashboard, and Driver Dashboard screens.
+    \item \textbf{Business Logic Layer (Models):} \texttt{Person.java}, \texttt{User.java}, \texttt{Driver.java}, \texttt{Ride.java} -- represent domain entities with OOP principles.
+    \item \textbf{Data Access Layer (Database):} \texttt{Database.java} -- manages all MySQL CRUD operations using JDBC with \texttt{PreparedStatement} for SQL injection prevention.
+\end{enumerate}
+
+\begin{figure}[h!]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{Images/architecture.jpg}
+    \caption{System Architecture Diagram}
+    \label{fig:architecture}
+\end{figure}
+
+\begin{table}[h!]
+\centering
+\caption{Project file structure}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{File} & \textbf{Description} \\ \hline
+Person.java & Base class with common attributes \\ \hline
+User.java & Customer class, extends Person \\ \hline
+Driver.java & Driver class, extends Person \\ \hline
+Ride.java & Ride data model \\ \hline
+Database.java & Data Access Layer (MySQL CRUD) \\ \hline
+BookingAppGUI.java & Swing GUI (968 lines) \\ \hline
+Main.java & Console-based alternative \\ \hline
+TestApp.java & Automated test suite (6 tests) \\ \hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Object-Oriented Design}
+
+This section explains how the three core OOP principles are applied in the project.
+
+\subsubsection{Class Hierarchy}
+
+The system uses a class hierarchy with \texttt{Person} as the base class:
+
+\begin{verbatim}
+        Person (base class)
+        /            \
+     User            Driver
+  (Customer)        (Ride driver)
+\end{verbatim}
+
+\begin{figure}[h!]
+    \centering
+    % \includegraphics[width=0.7\textwidth]{Images/uml.jpg}
+    \caption{UML Class Diagram illustrating Inheritance and Encapsulation}
+    \label{fig:uml}
+\end{figure}
+
+\subsubsection{Encapsulation}
+
+All class attributes are declared as \texttt{private} and accessed through public getter methods. This protects internal data from unauthorized modification.
+
+\begin{lstlisting}[caption={Encapsulation in Person.java -- private fields with public getters}]
+public class Person {
+    private String name;
+    private String phone;
+    private String username;
+    private String password;
+
+    public Person(String name, String phone, String username, String password) {
+        this.name = name;
+        this.phone = phone;
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getPhone() {
+        return this.phone;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+}
+\end{lstlisting}
+
+\textbf{Explanation:} The fields \texttt{name}, \texttt{phone}, \texttt{username}, and \texttt{password} are all declared \texttt{private}, meaning they cannot be accessed directly from outside the class. Instead, public getter methods like \texttt{getName()} provide controlled, read-only access. This ensures data integrity -- for example, the \texttt{password} field cannot be accidentally modified after object creation.
+
+\subsubsection{Inheritance}
+
+Both \texttt{User} and \texttt{Driver} extend the \texttt{Person} base class, inheriting all its attributes and methods while adding their own specific features.
+
+\begin{lstlisting}[caption={Inheritance -- Driver extends Person with additional attributes}]
+public class Driver extends Person { 
+    private String vehicle;
+    private boolean isAvailable;
+
+    public Driver(String name, String phone, String username, String password, String vehicle) {
+        super(name, phone, username, password);
+        this.vehicle = vehicle;
+        this.isAvailable = true;
+    }
+
+    public String getVehicle() {
+        return this.vehicle;
+    }
+
+    public boolean isAvailable() {
+        return this.isAvailable;
+    }
+
+    public void acceptRide() {
+        if (this.isAvailable) {
+            this.isAvailable = false;
+            System.out.println("Driver has accepted the ride!");
+        } else {
+            System.out.println("Driver is busy!");
+        }
+    }
+
+    public void completeRide() {
+        this.isAvailable = true;
+        System.out.println("Driver is now available!");
+    }
+}
+\end{lstlisting}
+
+\textbf{Explanation:} The \texttt{Driver} class uses \texttt{extends Person} to inherit all fields and methods from \texttt{Person}. The \texttt{super()} call in the constructor passes the common attributes to the parent class. Additionally, \texttt{Driver} adds its own fields (\texttt{vehicle}, \texttt{isAvailable}) and methods (\texttt{acceptRide()}, \texttt{completeRide()}) that are specific to the driver role.
+
+\subsubsection{Polymorphism}
+
+Polymorphism is demonstrated through method overriding. The base class \texttt{Person} defines methods \texttt{getRole()} and \texttt{getInfo()}, which are overridden by each subclass to return role-specific information.
+
+\begin{lstlisting}[caption={Polymorphism in Person.java -- base methods to be overridden}]
+    // Polymorphism: subclass overrides to return specific role
+    public String getRole() {
+        return "Person";
+    }
+
+    // Polymorphism: subclass overrides to return specific info
+    public String getInfo() {
+        return "Name: " + name + " | Phone: " + phone;
+    }
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Polymorphism -- User overrides getRole() and getInfo()}]
+    // Polymorphism: Override getRole() from Person
+    @Override
+    public String getRole() {
+        return "Customer";
+    }
+
+    // Polymorphism: Override getInfo() from Person
+    @Override
+    public String getInfo() {
+        return "Customer: " + getName() + " | Phone: " + getPhone();
+    }
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Polymorphism -- Driver overrides getRole() and getInfo()}]
+    // Polymorphism: Override getRole() from Person
+    @Override
+    public String getRole() {
+        return "Driver";
+    }
+
+    // Polymorphism: Override getInfo() from Person
+    @Override
+    public String getInfo() {
+        return "Driver: " + getName() + " | Plate: " + vehicle + " | Status: " + (isAvailable ? "Available" : "Busy");
+    }
+\end{lstlisting}
+
+\textbf{Explanation:} The same method \texttt{getRole()} produces different results depending on the actual object type at runtime:
+
+\begin{itemize}
+    \item \texttt{Person.getRole()} returns \texttt{"Person"}
+    \item \texttt{User.getRole()} returns \texttt{"Customer"}
+    \item \texttt{Driver.getRole()} returns \texttt{"Driver"}
+\end{itemize}
+
+This is \textbf{runtime polymorphism} -- the JVM determines which version of the method to call based on the actual object type, not the reference type. In the GUI, this is used to display role-specific information in the booking confirmation dialog and driver dashboard header.
+
+
+\subsection{Database Design}
+
+\subsubsection{Database Schema}
+
+The application uses a MySQL database named \texttt{booking\_app} with two tables: \texttt{drivers} and \texttt{rides}. The table structure can be seen through the seed data and INSERT queries in \texttt{Database.java}.
+
+The \texttt{drivers} table stores driver accounts. On startup, default test accounts are seeded automatically using \texttt{INSERT IGNORE} to avoid duplicates:
+
+\begin{lstlisting}[caption={seedData() in Database.java -- seeding default driver accounts}]
+private void seedData() {
+    String sql = "INSERT IGNORE INTO drivers (name, phone, username, password, license_plate) VALUES " +
+                 "('Cristiano Ronaldo', '0987654321', 'driver1', '123456', '29A-11111'), " +
+                 "('Lionel Messi', '0912345678', 'driver2', '234567', '29A-22222')";
+    try (Statement stmt = conn.createStatement()) {
+        stmt.executeUpdate(sql);
+    } catch (SQLException e) {
+        System.out.println("Seed data error: " + e.getMessage());
+    }
+}
+\end{lstlisting}
+
+The \texttt{rides} table stores all booking records. New rides are inserted via \texttt{PreparedStatement} with 8 columns:
+
+\begin{lstlisting}[caption={addRideWithPhone() in Database.java -- inserting a new ride}]
+public void addRideWithPhone(String customerName, String phone, String driverName, String pickup, String dropoff, float distance, float fare, String status) {
+    String sql = "INSERT INTO rides (customer_name, customer_phone, driver_name, pickup, dropoff, distance, fare, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, customerName);
+        pstmt.setString(2, phone);
+        pstmt.setString(3, driverName);
+        pstmt.setString(4, pickup);
+        pstmt.setString(5, dropoff);
+        pstmt.setFloat(6, distance);
+        pstmt.setFloat(7, fare);
+        pstmt.setString(8, status);
+        pstmt.executeUpdate();
+    } catch (SQLException e) {
+        System.out.println("Add ride error: " + e.getMessage());
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Entity Relationship}
+
+The two tables are related through the \texttt{driver\_name} field. When querying ride data, a \texttt{LEFT JOIN} is used to retrieve the driver's license plate:
+
+\begin{lstlisting}[language=SQL,caption={JOIN query to get rides with license plate}]
+String sql = "SELECT r.*, d.license_plate FROM rides r LEFT JOIN drivers d ON r.driver_name = d.name WHERE r.driver_name = ? AND r.status = 'In Progress' ORDER BY r.id DESC LIMIT 1";
+\end{lstlisting}
+
+\subsubsection{SQL Injection Prevention}
+
+All database queries that accept user input use \texttt{PreparedStatement} instead of string concatenation to prevent SQL injection attacks:
+
+\begin{lstlisting}[caption={Using PreparedStatement for secure queries}]
+public Driver findDriver(String username, String password) {
+    String sql = "SELECT * FROM drivers WHERE username = ? AND password = ?";
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, username);
+        pstmt.setString(2, password);
+        try (ResultSet rs = pstmt.executeQuery()) {
+            // ... Object mapping
+        }
+    } catch (SQLException e) {
+        System.out.println("Find driver error: " + e.getMessage());
+    }
+    return null;
+}
+\end{lstlisting}
+
+\subsubsection{Auto-Sync Driver Availability}
+
+A synchronization mechanism automatically fixes drivers stuck in ``busy'' state when no active ride exists:
+
+\begin{lstlisting}[caption={Auto-fix stuck driver states on startup}]
+private void syncDriverAvailability() {
+    String sql = "UPDATE drivers SET is_available = TRUE " +
+                 "WHERE is_available = FALSE AND name NOT IN " +
+                 "(SELECT driver_name FROM rides WHERE status = 'In Progress')";
+    try (Statement stmt = conn.createStatement()) {
+        int fixed = stmt.executeUpdate(sql);
+        if (fixed > 0) {
+            System.out.println("Auto-fix: Reset " + fixed + " driver(s) with stuck busy state.");
+        }
+    } catch (SQLException e) {
+        System.out.println("Sync driver error: " + e.getMessage());
+    }
+}
+\end{lstlisting}
+
+
+\subsection{Implementation}
+
+\subsubsection{GUI Design}
+
+The GUI is built with Java Swing using a custom dark theme with a premium color palette. Key UI components include:
+
+\begin{itemize}
+    \item \textbf{GradientPanel:} Custom \texttt{JPanel} with gradient background painting.
+    \item \textbf{RoundedPanel:} Custom \texttt{JPanel} with rounded corners for card-style layouts.
+    \item \textbf{Styled Buttons:} Custom buttons with hover effects and rounded corners.
+    \item \textbf{CardLayout:} Used to switch between Login, Customer, and Driver screens without creating new windows.
+\end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    % \includegraphics[width=0.9\textwidth]{Images/ui_customer.jpg}
+    \caption{Customer Booking Interface}
+    \label{fig:ui_customer}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    % \includegraphics[width=0.9\textwidth]{Images/ui_driver.jpg}
+    \caption{Driver Dashboard Interface}
+    \label{fig:ui_driver}
+\end{figure}
+
+\begin{lstlisting}[caption={Custom color palette for dark theme UI}]
+private Color bgDark = new Color(15, 23, 42);        // Slate 900
+private Color bgCard = new Color(30, 41, 59);         // Slate 800
+private Color bgCardHover = new Color(51, 65, 85);    // Slate 700
+private Color accentBlue = new Color(56, 189, 248);   // Sky 400
+private Color accentGreen = new Color(52, 211, 153);  // Emerald 400
+private Color accentRed = new Color(251, 113, 133);   // Rose 400
+private Color accentYellow = new Color(251, 191, 36); // Amber 400
+private Color textPrimary = new Color(241, 245, 249); // Slate 100
+\end{lstlisting}
+
+\subsubsection{Ride Booking Logic}
+
+When a customer books a ride, the following steps occur:
+
+\begin{enumerate}
+    \item The system queries the database for an available driver (\texttt{is\_available = TRUE}).
+    \item The fare is calculated using the formula: $\text{Fare} = 10{,}000 + 8{,}000 \times \text{distance}$.
+    \item A new ride record is inserted into the \texttt{rides} table with status ``In Progress''.
+    \item The assigned driver's \texttt{is\_available} is set to \texttt{FALSE}.
+    \item A confirmation dialog displays the driver name, license plate, and fare.
+\end{enumerate}
+
+\begin{figure}[h!]
+    \centering
+    % \includegraphics[width=0.6\textwidth]{Images/flowchart.jpg}
+    \caption{Logic Flowchart for the Ride Booking Process}
+    \label{fig:flowchart}
+\end{figure}
+
+\begin{lstlisting}[caption={Core booking logic in BookingAppGUI.java}]
+btnBook.addActionListener(e -> {
+    try {
+        String pick = txtPickup.getText();
+        String drop = txtDropoff.getText();
+        float dist = Float.parseFloat(txtDistance.getText());
+        Driver driver = db.findAvailableDriver();
+        if (driver != null) {
+            double fare = 10000 + (dist * 8000);
+            db.addRideWithPhone(currentUser.getName(), currentUser.getPhone(), driver.getName(), pick, drop, dist,
+                    (float) fare, "In Progress");
+            db.updateDriverAvailability(driver.getUsername(), false);
+            JOptionPane.showMessageDialog(this,
+                "Ride Booked!\nRole: " + currentUser.getRole() +
+                "\nDriver: " + driver.getName() + " (" + driver.getRole() + ")" +
+                "\nPlate: " + driver.getVehicle() +
+                "\nFare: " + String.format("%,.0f", fare) + " VND",
+                "Success", JOptionPane.INFORMATION_MESSAGE);
+            refreshHistory();
+            txtPickup.setText(""); txtDropoff.setText(""); txtDistance.setText("");
+        } else {
+            JOptionPane.showMessageDialog(this, "No available drivers at the moment!", "Sorry", JOptionPane.WARNING_MESSAGE);
+        }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Please enter a valid distance!", "Input Error", JOptionPane.ERROR_MESSAGE);
+    }
+});
+\end{lstlisting}
+
+\textbf{Explanation:} This code demonstrates the practical use of polymorphism: \texttt{currentUser.getRole()} returns ``Customer'' and \texttt{driver.getRole()} returns ``Driver'' in the confirmation dialog, even though both are subclasses of \texttt{Person}.
+
+\subsubsection{Driver Dashboard}
+
+The driver dashboard displays real-time statistics by querying the database:
+
+\begin{lstlisting}[caption={Querying driver statistics from database}]
+// Count completed rides for a specific driver
+public int getCompletedRideCount(String driverName) {
+    String sql = "SELECT COUNT(*) FROM rides "
+        + "WHERE driver_name = ? AND status = 'Completed'";
+    PreparedStatement pstmt = conn.prepareStatement(sql);
+    pstmt.setString(1, driverName);
+    ResultSet rs = pstmt.executeQuery();
+    if (rs.next()) return rs.getInt(1);
+    return 0;
+}
+
+// Calculate total earnings
+public double getTotalEarnings(String driverName) {
+    String sql = "SELECT COALESCE(SUM(fare), 0) FROM rides "
+        + "WHERE driver_name = ? AND status = 'Completed'";
+    PreparedStatement pstmt = conn.prepareStatement(sql);
+    pstmt.setString(1, driverName);
+    ResultSet rs = pstmt.executeQuery();
+    if (rs.next()) return rs.getDouble(1);
+    return 0;
+}
+\end{lstlisting}
+
+
+%=============================================
+\section{Testing and Evaluation Results}\label{sec:testing}
+%=============================================
+
+\subsection{Testing Methodology}
+
+The application includes an automated test suite (\texttt{TestApp.java}) with 6 test cases that verify all major system workflows. The tests use a setup-execute-verify pattern and interact directly with the MySQL database.
+
+\subsection{Test Cases and Results}
+
+\begin{table*}[t]
+\centering
+\caption{Test case results}
+\begin{tabular}{|c|p{6cm}|p{5cm}|c|}
+\hline
+\textbf{No.} & \textbf{Test Case} & \textbf{Expected} & \textbf{Result} \\ \hline
+1 & Find an available driver in database & Driver found & PASS \\ \hline
+2 & Book a ride with phone number & Ride saved with correct status & PASS \\ \hline
+3 & Driver login with correct credentials & Login successful & PASS \\ \hline
+4 & Driver login with wrong password & Login rejected (null) & PASS \\ \hline
+5 & Complete ride and driver available again & Status = Completed, driver free & PASS \\ \hline
+6 & No driver available when all busy & Returns null & PASS \\ \hline
+\end{tabular}
+\end{table*}
+
+\begin{lstlisting}[caption={Example test case -- booking a ride and verifying database state}]
+        // --- TEST 2: Book a ride and verify driver marked as busy ---
+        System.out.println("--- TEST 2: Book a Ride (phone: 0912345678) ---");
+        if (d1 != null) {
+            db.addRideWithPhone("Guest", "0912345678", d1.getName(), "Ha Noi", "Bac Ninh", 10, 90000, "In Progress");
+            db.updateDriverAvailability(d1.getUsername(), false);
+
+            // Check if that driver is no longer found as available
+            Driver d2 = db.findAvailableDriver();
+            // If only 1 driver exists, d2 should be null or a different driver
+            java.util.ArrayList<Ride> rides = db.getRides();
+            check("Ride was saved to DB", rides.size() >= 1);
+            check("Phone number saved correctly", 
+                rides.stream().anyMatch(r -> "0912345678".equals(r.getPhone())));
+            check("Ride status is 'In Progress'", 
+                rides.stream().anyMatch(r -> "In Progress".equals(r.getStatus())));
+            System.out.println("   -> Ride count in DB: " + rides.size());
+            System.out.println("   -> Status: " + rides.get(rides.size()-1).getStatus());
+        }
+\end{lstlisting}
+
+\subsection{Evaluation}
+
+\textbf{All 6 test cases passed successfully}, confirming that the core functionalities work as expected:
+
+\begin{itemize}
+    \item Driver availability management works correctly.
+    \item Ride booking creates proper database records with phone number tracking.
+    \item Driver authentication accepts valid credentials and rejects invalid ones.
+    \item Ride completion updates status and frees the driver for new bookings.
+    \item Edge case handling: the system correctly returns null when no drivers are available.
+\end{itemize}
+
+
+%=============================================
+\section{Conclusion}\label{sec:conclusion}
+%=============================================
+
+\subsection{Summary}
+
+This project successfully developed a Smart Ride Booking System (ThangTranApp) that meets all requirements specified in the assignment:
+
+\begin{itemize}
+    \item Users can request rides through a graphical user interface with pickup/dropoff locations and distance input.
+    \item The system calculates fares automatically using a base fee plus per-kilometer rate.
+    \item Ride status is managed throughout the lifecycle (In Progress $\rightarrow$ Completed).
+    \item All data (drivers, rides) is stored persistently in a MySQL database.
+    \item The code is organized into logical components following OOP principles.
+\end{itemize}
+
+The three OOP principles were applied as follows:
+\begin{itemize}
+    \item \textbf{Inheritance:} \texttt{User} and \texttt{Driver} extend the \texttt{Person} base class.
+    \item \textbf{Encapsulation:} All fields are \texttt{private} with public getter methods.
+    \item \textbf{Polymorphism:} \texttt{getRole()} and \texttt{getInfo()} are overridden in subclasses to provide role-specific behavior at runtime.
+\end{itemize}
+
+\subsection{Future Work}
+
+Potential improvements for future development include:
+\begin{itemize}
+    \item Password hashing (e.g., BCrypt) instead of plain-text storage.
+    \item Real-time GPS integration for actual distance calculation.
+    \item Payment gateway integration for online fare payment.
+    \item Rating system for drivers and customers.
+    \item Multi-language support (Vietnamese/English).
+\end{itemize}
+
+\subsection{Links}
+
+\begin{itemize}
+    \raggedright
+    \item \textbf{Source Code (GitHub):} \href{https://github.com/ThangTran2802/ThangTranApp}{github.com/ThangTran2802/ThangTranApp}
+    \item \textbf{Demo Video (YouTube):} \url{YOUR-YOUTUBE-LINK-HERE}
+\end{itemize}
+
+
+\vspace{12pt}
+\vspace{12pt}
+\end{document}
